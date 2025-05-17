@@ -1,0 +1,2 @@
+C:/Users/raunak/AndroidStudioProjects/tripnest/android/app/.cxx/Debug/6g2k333f/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/raunak/AndroidStudioProjects/tripnest/android/app/.cxx/Debug/6g2k333f/armeabi-v7a/CMakeFiles/rebuild_cache.dir
