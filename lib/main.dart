@@ -89,19 +89,19 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
-    debugPrint("🔥 SplashScreen Initialized");
-
     _controller = AnimationController(
-      duration: Duration(seconds: 2),
+      duration: const Duration(milliseconds:1500 ),
       vsync: this,
-    )..forward();
-
-    _animation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.bounceInOut,
     );
 
-    Timer(Duration(seconds: 2), () {
+    _animation = Tween<double>(begin: 0.0, end: 1.5).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+
+    _controller.forward();
+
+    // Navigate after animation
+    Timer(const Duration(milliseconds: 1500), () {
       if (mounted) {
         Navigator.pushReplacement(
           context,
@@ -119,29 +119,20 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("🔥 SplashScreen Built");
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Tripnest"),
-        backgroundColor: Colors.blueAccent,
-      ),
-      body: Center(
-        child: AnimatedBuilder(
-          animation: _animation,
-          builder: (context, child) {
-            return Transform.scale(
-              scale: _animation.value,
+      body: AnimatedBuilder(
+        animation: _animation,
+        builder: (context, child) {
+          return Transform.scale(
+            scale: _animation.value,
+            child: SizedBox.expand(
               child: Image.asset(
-                "assets/images/flight.jpg",
+                "assets/tour/logo.jpg",
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Text("🚨 Image Not Found",
-                      style: TextStyle(fontSize: 18, color: Colors.red));
-                },
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
