@@ -76,6 +76,8 @@ class MyApp extends StatelessWidget {
 }
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
@@ -89,22 +91,22 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
+    // Fast zoom animation: 1.2 seconds
     _controller = AnimationController(
-      duration: const Duration(milliseconds:1500 ),
       vsync: this,
+      duration: const Duration(milliseconds: 2000),
     );
 
-    _animation = Tween<double>(begin: 0.0, end: 1.5).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    _animation = Tween<double>(begin: 0.0, end: 25.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.fastOutSlowIn),
     );
 
     _controller.forward();
 
-    // Navigate after animation
-    Timer(const Duration(milliseconds: 1500), () {
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
+    // Wait for animation to finish before navigating
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => LoginPage()),
         );
       }
@@ -120,20 +122,17 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AnimatedBuilder(
-        animation: _animation,
-        builder: (context, child) {
-          return Transform.scale(
-            scale: _animation.value,
-            child: SizedBox.expand(
-              child: Image.asset(
-                "assets/tour/logo.jpg",
-                fit: BoxFit.cover,
-              ),
-            ),
-          );
-        },
-      ),
+        backgroundColor: Colors.deepPurple.shade50,
+        body: Center(
+            child: ScaleTransition(
+                scale: _animation,
+                child: Image.asset(
+                  'assets/tour/logo.jpg', // ⬅ Use your own logo here
+                  width: 100,
+                  height: 100,
+                )
+            )
+        )
     );
   }
 }
