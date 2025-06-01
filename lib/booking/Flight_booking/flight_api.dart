@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class AirportService {
-  static const String apiUrl = "https://sky-scanner3.p.rapidapi.com/flights/airports";
-  static const String entityApiUrl = "https://sky-scanner3.p.rapidapi.com/flights/auto-complete";
+  static const String apiUrl = "https://flights-sky.p.rapidapi.com/flights/airports";
+  static const String entityApiUrl = "https://flights-sky.p.rapidapi.com/flights/auto-complete";
 
   static const Map<String, String> headers = {
-    "X-RapidAPI-Host": "sky-scanner3.p.rapidapi.com",
+    "X-RapidAPI-Host": "flights-sky.p.rapidapi.com",
     "X-RapidAPI-Key": "33284aa385msh5ad80224e01157ep1fc26ejsnf54fb12c0dcf"
   };
 
@@ -16,16 +16,27 @@ class AirportService {
       print("🔍 Fetching airports...");
 
       final response = await http.get(Uri.parse(apiUrl), headers: headers);
-      if (response.statusCode != 200) throw Exception("Failed to load airports");
+      print("🔴 Status Code: ${response.statusCode}");
+      print("📜 Response Body: ${response.body}");
+
+      if (response.statusCode != 200) {
+        throw Exception("Failed to load airports");
+      }
 
       final Map<String, dynamic> responseData = json.decode(response.body);
       if (!responseData.containsKey('data')) throw Exception("Invalid API response");
 
       List<String> indianAirports = [];
       for (var airport in responseData['data']) {
-        if (airport is Map<String, dynamic> && airport.containsKey('location')) {
-          String location = airport['location'];
-          if (location.contains("India")) {
+        if (airport is Map<String, dynamic>) {
+          final location = airport['location'];
+
+          if (location is String && location.contains("India")) {
+            indianAirports.add("${airport['name']} (${airport['iata']})");
+          }
+
+          // OR, if location is a nested map:
+          if (location is Map && location['country'] == "India") {
             indianAirports.add("${airport['name']} (${airport['iata']})");
           }
         }
@@ -55,9 +66,9 @@ class AirportService {
   }
 }
 class FlightSearchService {
-  static const String baseUrl = "https://sky-scanner3.p.rapidapi.com/flights";
+  static const String baseUrl = "https://flights-sky.p.rapidapi.com/flights";
   static const Map<String, String> headers = {
-    "X-RapidAPI-Host": "sky-scanner3.p.rapidapi.com",
+    "X-RapidAPI-Host": "flights-sky.p.rapidapi.com",
     "X-RapidAPI-Key": "33284aa385msh5ad80224e01157ep1fc26ejsnf54fb12c0dcf"
   };
 
